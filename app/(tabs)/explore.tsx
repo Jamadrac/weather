@@ -1,102 +1,145 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  Button,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import axios from "axios";
+import { picApi } from "@/config";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function App() {
+  const [placeQuery, setPlaceQuery] = useState<string>("");
+  const [placeDetails, setPlaceDetails] = useState<any>(null);
+  const [photoUrl, setPhotoUrl] = useState<string>("");
+  const [history, setHistory] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-export default function TabTwoScreen() {
+  const fetchPlaceDetails = async () => {
+    setLoading(true);
+    try {
+      // Fetch place details from OpenStreetMap's Nominatim API
+      const url = `https://nominatim.openstreetmap.org/search?q=${placeQuery}&format=json&limit=1`;
+      const response = await axios.get(url);
+      const place = response.data[0];
+
+      if (place) {
+        setPlaceDetails(place);
+        await fetchImage(place.display_name);
+        setHistory(`A brief history of ${place.display_name}.`);
+      } else {
+        setPlaceDetails(null);
+        setPhotoUrl("");
+        setHistory("Place not found. Try another search.");
+      }
+    } catch (error) {
+      console.error("Error fetching place data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchImage = async (query: string) => {
+    const pexelsKey = `${picApi}`; // Replace with your Pexels API key
+    try {
+      const response = await axios.get(
+        `https://api.pexels.com/v1/search?query=${query}&per_page=1`,
+        {
+          headers: {
+            Authorization: pexelsKey,
+          },
+        }
+      );
+      const photo = response.data.photos[0]?.src?.medium;
+      setPhotoUrl(photo || "");
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Search for a Place</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter place name (e.g., Lusaka)"
+        value={placeQuery}
+        onChangeText={setPlaceQuery}
+      />
+      <Button title="Search" onPress={fetchPlaceDetails} />
+
+      {loading ? (
+        <Text style={styles.loadingText}>Loading...</Text>
+      ) : placeDetails ? (
+        <ScrollView contentContainerStyle={styles.resultContainer}>
+          <Text style={styles.placeName}>{placeDetails.display_name}</Text>
+          {photoUrl ? (
+            <Image source={{ uri: photoUrl }} style={styles.image} />
+          ) : (
+            <Text>No image found</Text>
+          )}
+          <Text style={styles.historyTitle}>History</Text>
+          <Text style={styles.historyText}>{history}</Text>
+        </ScrollView>
+      ) : (
+        <Text style={styles.loadingText}>Enter a place to search</Text>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    backgroundColor: "#f0f0f0",
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 8,
+  },
+  resultContainer: {
+    alignItems: "center",
+  },
+  placeName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  image: {
+    width: 300,
+    height: 200,
+    marginVertical: 20,
+  },
+  historyTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 20,
+  },
+  historyText: {
+    fontSize: 16,
+    color: "gray",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  loadingText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "gray",
   },
 });
