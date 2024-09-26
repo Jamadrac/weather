@@ -12,7 +12,7 @@ import axios from "axios";
 const WeatherScreen = () => {
   const [city, setCity] = useState("");
   const [countryCode, setCountryCode] = useState("");
-  const [currentWeather, setCurrentWeather] = useState(null);
+  const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [forecast, setForecast] = useState([]);
 
   const API_KEY = "YOUR_API_KEY";
@@ -69,10 +69,9 @@ const WeatherScreen = () => {
         </View>
       )}
 
-      {/* 16-day Weather Forecast */}
       {forecast.length > 0 && (
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {forecast.map((day, index) => (
+          {forecast.map((day: any, index: any): any => (
             <View key={index} style={styles.dayCard}>
               <Text>Date: {day.datetime}</Text>
               <Text>Max Temp: {day.max_temp}°C</Text>
