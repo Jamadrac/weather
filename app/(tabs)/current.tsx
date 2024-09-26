@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import axios from "axios";
+import { apix } from "@/config";
 
 const current = () => {
   const [city, setCity] = useState("");
   const [countryCode, setCountryCode] = useState("");
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState<any>(null);
 
-  const API_KEY = "YOUR_API_KEY"; // Replace with your Weatherbit API key
+  const API_KEY = `${apix}`; //i was on rapid speed env erros didnt time captain thanks for understanding ;
 
   const fetchWeather = () => {
     const url = `https://api.weatherbit.io/v2.0/current?city=${city}&country=${countryCode}&key=${API_KEY}`;

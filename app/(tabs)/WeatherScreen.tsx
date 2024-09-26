@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import axios from "axios";
+import { apix } from "../../config";
 
 const WeatherScreen = () => {
   const [city, setCity] = useState("");
@@ -15,7 +16,7 @@ const WeatherScreen = () => {
   const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [forecast, setForecast] = useState([]);
 
-  const API_KEY = "YOUR_API_KEY";
+  const API_KEY = `${apix}`;
 
   const fetchWeatherData = () => {
     // Fetch current weather
