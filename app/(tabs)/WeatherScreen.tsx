@@ -16,7 +16,7 @@ const WeatherScreen = () => {
   const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [forecast, setForecast] = useState([]);
 
-  const API_KEY = `${apix}`;
+  const API_KEY = `${apix}`; //i was on rapid speed env erros didnt time captain thanks for understanding ;
 
   const fetchWeatherData = () => {
     // Fetch current weather
