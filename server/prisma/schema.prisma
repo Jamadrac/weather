@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String
+  email      String   @unique
+  password   String
+  phoneNumber String?
+  role       String
+  token      String?  // For OTP or token
+  group      Int?     // Only for Admins
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
