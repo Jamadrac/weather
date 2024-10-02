@@ -1,15 +1,19 @@
 // bus-server/src/User/loginController.ts
-import { prisma } from "../../config/db";
+import { prisma } from "../config/db";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { hash, compare } from "bcrypt";
-import { sendMail } from "../../utils/mail";
-// import { generateToken } from "../../utils/functions";
-import { generateOTP } from "../../utils/otp";
+import { sendMail } from "../utils/mail";
+import { generateOTP } from "../utils/otp";
+import { BaseUrl } from "../config/constvariables";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { VerifyEmailAndOTPRequest } from "../../types/interface";
+export interface VerifyEmailAndOTPRequest {
+  otp: string;
+  email: string;
+  password: string;
+}
 
 export const userRegisterController = async (req: Request, res: Response) => {
   try {
@@ -37,10 +41,10 @@ export const userRegisterController = async (req: Request, res: Response) => {
 
     const emailOptions = {
       to: user.email,
-      subject: "Welcome to Zambus",
+      subject: "Welcome ",
       html: `<p>Dear ${user.username},</p>
               <p>Thank you for registering with us. We're excited to have you on board.</p>
-              <p>Best regards,<br>Zambus Team</p>`,
+              <p>Best regards,<br>${BaseUrl}</p>`,
     };
     await sendMail(emailOptions);
 
@@ -137,8 +141,8 @@ export const userForgotPasswordController = async (
       html: `<p>Dear ${updatedUser.username},</p>
               <p>Your OTP for password reset is: ${otp}</p>
               <p>If you did not request this, please ignore this message.</p>
-              <p> use this link to updat or your mobile app https://zam-bus.vercel.app/update/password </p>
-              <p>Best regards,<br>Zambus Team</p>`,
+              <p> use this link to updat or your mobile app ${BaseUrl}/update/password </p>
+              <p>Best regards,<br>${BaseUrl} Team</p>`,
     };
 
     await sendMail(emailOptions);
@@ -202,7 +206,7 @@ export const verifyEmailAndOTP = async (req: Request, res: Response) => {
               <p>Your password has been successfully reset.</p>
               <p>If you did not perform this action, please contact support immediately.</p>
              
-              <p>Best regards,<br>Zambus Team</p>`,
+              <p>Best regards,<br>${BaseUrl} Team</p>`,
     };
 
     await sendMail(emailOptions);
