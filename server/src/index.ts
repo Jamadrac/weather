@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 
 // Error handling
-app.use((err: any, req: any, res: any, next: any) => {
+app.use((err: any, _req: any, res: any, _next: any) => {
   res.status(err.status || 500).send({
     message: err.message || "Internal Server Error",
   });
