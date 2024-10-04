@@ -17,7 +17,7 @@ const getIconName = (routeName: string, isFocused: boolean) => {
     iconName = isFocused ? "today" : "today-outline";
   } else if (routeName === "explore") {
     iconName = isFocused ? "compass" : "compass-outline";
-  } else if (routeName === "WeatherScreen") {
+  } else if (routeName === "weather") {
     iconName = isFocused ? "cloudy" : "cloudy-outline";
   } else if (routeName === "profile") {
     iconName = isFocused ? "person" : "person-outline";
@@ -72,42 +72,113 @@ const TabBarButton = ({
 };
 
 // Custom TabBar Component
-function CustomTabBar({ state, descriptors, navigation }) {
+function CustomTabBar({
+  state,
+  descriptors,
+  navigation,
+}: {
+  state: any;
+  descriptors: any;
+  navigation: any;
+}) {
+  const isFocusedCurrent = state.index === 0;
+  const isFocusedExplore = state.index === 1;
+  const isFocusedWeather = state.index === 2;
+  const isFocusedProfile = state.index === 3;
+
   return (
     <View style={styles.tabBar}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const isFocused = state.index === index;
-
-        const onPress = () => {
+      {/* Tab for Current */}
+      <TabBarButton
+        routeName="current"
+        isFocused={isFocusedCurrent}
+        onPress={() => {
           const event = navigation.emit({
             type: "tabPress",
-            target: route.key,
+            target: state.routes[0].key,
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
+          if (!isFocusedCurrent && !event.defaultPrevented) {
+            navigation.navigate(state.routes[0].name);
           }
-        };
-
-        const onLongPress = () => {
+        }}
+        onLongPress={() => {
           navigation.emit({
             type: "tabLongPress",
-            target: route.key,
+            target: state.routes[0].key,
           });
-        };
+        }}
+      />
 
-        return (
-          <TabBarButton
-            key={route.key}
-            routeName={route.name}
-            isFocused={isFocused}
-            onPress={onPress}
-            onLongPress={onLongPress}
-          />
-        );
-      })}
+      {/* Tab for Explore */}
+      <TabBarButton
+        routeName="explore"
+        isFocused={isFocusedExplore}
+        onPress={() => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: state.routes[1].key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocusedExplore && !event.defaultPrevented) {
+            navigation.navigate(state.routes[1].name);
+          }
+        }}
+        onLongPress={() => {
+          navigation.emit({
+            type: "tabLongPress",
+            target: state.routes[1].key,
+          });
+        }}
+      />
+
+      {/* Tab for Weather */}
+      <TabBarButton
+        routeName="weather"
+        isFocused={isFocusedWeather}
+        onPress={() => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: state.routes[2].key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocusedWeather && !event.defaultPrevented) {
+            navigation.navigate(state.routes[2].name);
+          }
+        }}
+        onLongPress={() => {
+          navigation.emit({
+            type: "tabLongPress",
+            target: state.routes[2].key,
+          });
+        }}
+      />
+
+      {/* Tab for Profile */}
+      <TabBarButton
+        routeName="profile"
+        isFocused={isFocusedProfile}
+        onPress={() => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: state.routes[3].key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocusedProfile && !event.defaultPrevented) {
+            navigation.navigate(state.routes[3].name);
+          }
+        }}
+        onLongPress={() => {
+          navigation.emit({
+            type: "tabLongPress",
+            target: state.routes[3].key,
+          });
+        }}
+      />
     </View>
   );
 }
@@ -134,7 +205,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="WeatherScreen"
+        name="weather"
         options={{
           title: "Weather",
         }}
@@ -156,7 +227,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     elevation: 0,
-    backgroundColor: "white",
+    backgroundColor: "transparent", // Set background to transparent
     borderRadius: 15,
     height: 60,
     shadowColor: "#000",
@@ -166,7 +237,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
-    elevation: 5,
     flexDirection: "row",
     alignItems: "center",
   },

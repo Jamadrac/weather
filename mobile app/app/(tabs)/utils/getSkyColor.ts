@@ -1,8 +1,8 @@
-export const getSkyColor = () => {
+export const getSkyColor = (description: any) => {
   const hour = new Date().getHours();
-  if (hour < 6) return "#2c3e50"; // Early morning
-  if (hour < 12) return "#87CEEB"; // Morning (sky blue)
-  if (hour < 18) return "#FFD700"; // Afternoon (golden)
-  if (hour < 20) return "#FFA07A"; // Evening (sunset)
-  return "#2c3e50"; // Night
+  if (hour < 6) return "#2c3e50";
+  if (hour < 12) return "#87CEEB";
+  if (hour < 18) return "#FFD700";
+  if (hour < 20) return "#FFA07A";
+  return "#2c3e50";
 };
